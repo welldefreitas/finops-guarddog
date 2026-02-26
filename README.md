@@ -1,58 +1,95 @@
-# cloud-guardrails-bot
+<div align="center">
 
-[![ci](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/cloud-guardrails-bot/actions/workflows/ci.yml)
-[![security](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/security.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/cloud-guardrails-bot/actions/workflows/security.yml)
+<img src="https://raw.githubusercontent.com/welldefreitas/cloud-guardrails-bot/main/guarddog.jpg" alt="Cloud GuardDog" width="150" onerror="this.style.display='none'"/>
 
-> 🔧 Replace `YOUR_GITHUB_USERNAME` in badge URLs after you create the repo.
+# 🛡️ Cloud GuardDog (FinOps & SecOps)
 
-Policy-driven **FinOps & Security** remediation via **Slack approvals** — with **OTP step-up** + **dual approval for PROD**.
+**Policy-driven auto-remediation via Slack approvals — with OTP step-up & dual approval for PROD.**
 
-> **Design stance:** policy-as-code is the decision engine. The LLM is *optional* and only explains/enriches context inside a strict schema.
+[![ci](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/ci.yml)
+[![security](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/security.yml/badge.svg)](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/security.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=flat&logo=redis&logoColor=white)](https://redis.io/)
 
-## What this repo provides (MVP skeleton)
+> **Design stance:** *Policy-as-code* is the deterministic decision engine. The LLM is strictly optional and only explains/enriches context inside a rigid JSON schema. The AI never pulls the trigger.
 
-- FastAPI service that:
-  - receives normalized alerts via webhook
-  - evaluates them against **deny-by-default** policies
-  - issues an **Action Proposal** (what, why, risk tier)
-  - manages **OTP** (rotating code with TTL + max attempts)
-  - exposes Slack verification helpers + payload schema (ready for interactive modals)
+</div>
 
-- Policy & runbook scaffolding:
-  - `policies/rego/` examples (OPA-ready)
-  - `runbooks/aws/` placeholders for action executors
-  - `slack/` blocks + app manifest templates
-  - `docs/` architecture, threat model, ADRs
+---
 
-## Security controls (built-in)
-- **Least privilege by design:** executor roles are per-runbook (recommended)
-- **Step-up confirmation:** typed confirmation + OTP (no static shared passwords)
-- **Dual approval for PROD:** 2 distinct approvers within time window (recommended integration point)
-- **Slack request verification:** signature validation helper (HMAC SHA256)
-- **Audit trail interface:** structured events (JSONL-friendly) for SIEM ingestion
+## ⚡ What this repo provides (MVP skeleton)
 
-## Quickstart (local)
+* **FastAPI Core:**
+  * Receives normalized alerts via signed webhooks.
+  * Evaluates them against **deny-by-default** mathematical policies.
+  * Issues an **Action Proposal** (What, Why, Risk Tier, ROI).
+  * Manages **Rotating OTPs** (TTL + Max attempts limit).
+  * Exposes Slack payload schemas ready for interactive modals.
+* **Governance Scaffolding:**
+  * `policies/rego/` — OPA-ready examples.
+  * `runbooks/aws/` — Placeholders for safe, least-privilege action executors.
+  * `slack/` — Block Kit templates & App manifests.
+  * `docs/` — Architecture diagrams, Threat Models, and ADRs.
 
-### 1) Create a virtualenv and install
+## 🔐 Built-in Security Controls
+- 🛑 **Least privilege by design:** Executor roles are mapped per-runbook.
+- 🔑 **Step-up confirmation:** Typed confirmation (`APPLY <ID>`) + Slack DM OTP (No static shared passwords).
+- 👥 **Dual approval for PROD:** 2 distinct approvers required within a specific time window.
+- 🔏 **Slack request verification:** Strict HMAC SHA256 signature validation.
+- 📜 **Audit trail interface:** JSONL-friendly structured events ready for SIEM (Splunk/Datadog) ingestion.
+
+---
+
+## 🗺️ Architecture Workflow
+
+```mermaid
+%% Cloud Guardrails Bot - Architecture (MVP)
+graph TD
+  A[Cloud Alerts<br/>AWS/GCP] -->|Webhook signed| B[Ingress<br/>n8n or FastAPI]
+  B --> C[Normalize + Enrich<br/>tags/labels, cost, risk]
+  C --> D[Policy Engine<br/>deny-by-default]
+  D -->|Proposal| E[Slack Card<br/>Approve/Deny/Exception]
+  E -->|Approve| F[Slack Modal<br/>typed confirmation]
+  F -->|Step-up| G[OTP via DM<br/>TTL + max attempts]
+  G --> H{Approval rules}
+  H -->|DEV/STAGE: 1| I[Execute Runbook<br/>least-priv role]
+  H -->|PROD: 2| I
+  I --> J[Audit Log + Metrics]
+  J --> E
+```
+
+---
+
+## 🚀 Quickstart (Local Dev)
+
+<details>
+<summary><b>1. Create a virtualenv and install</b></summary>
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -U pip
 pip install -e ".[dev]"
 ```
+</details>
 
-### 2) Run the API
+<details>
+<summary><b>2. Run the API</b></summary>
+
 ```bash
 uvicorn guardrails.app:app --reload --port 8000
 ```
+</details>
 
-### 3) Health check
+<details>
+<summary><b>3. Health check & Simulate Alert</b></summary>
+
 ```bash
+# Check if API is alive
 curl -s http://localhost:8000/healthz | jq
-```
 
-### 4) Simulate an alert
-```bash
+# Simulate an AWS FinOps Alert (Out-of-hours EC2)
 curl -s http://localhost:8000/webhook/alert \
   -H "Content-Type: application/json" \
   -d '{
@@ -65,96 +102,46 @@ curl -s http://localhost:8000/webhook/alert \
     "observed_at":"2026-02-26T08:00:00Z"
   }' | jq
 ```
-
-## Architecture (Mermaid)
-
-```mermaid
-%% Cloud Guardrails Bot - Architecture (MVP)
-graph TD
-  A[Cloud Alerts<br/>(AWS/GCP)] -->|Webhook (signed)| B[Ingress (n8n or FastAPI)]
-  B --> C[Normalize + Enrich<br/>(tags/labels,cost,risk)]
-  C --> D[Policy Engine<br/>deny-by-default]
-  D -->|Proposal| E[Slack Card<br/>Approve/Deny/Snooze/Exception]
-  E -->|Approve| F[Slack Modal<br/>typed confirmation]
-  F -->|Step-up| G[OTP (DM)<br/>TTL + max attempts]
-  G --> H{Approval rules}
-  H -->|DEV/STAGE: 1| I[Execute Runbook<br/>(least-priv role)]
-  H -->|PROD: 2| I
-  I --> J[Audit Log + Metrics]
-  J --> E
-```
-
-
-## Repo map
-- `src/guardrails/` — FastAPI app + services (OTP, policy, Slack verify, audit)
-- `policies/` — policy examples (OPA-ready) + sample inputs
-- `slack/` — Slack app manifest + Block Kit payload templates
-- `workflows/n8n/` — placeholder flow JSONs (ingest → normalize → policy → notify → approve → execute)
-- `runbooks/` — action executors (placeholder)
-
-## Roadmap
-- OPA/Rego evaluation server-side (optional) or Conftest-based pipeline checks
-- Slack interactive modals (Approve → typed confirmation + OTP)
-- Dual-approval coordinator for PROD (2 users, timeboxed)
-- Terraform plan/apply executor (with diff surfaced in Slack)
+</details>
 
 ---
 
-### Disclaimer
-This project is a **starter kit**. Do **not** point it at production accounts without hardening IAM, secrets handling, and change-management integration.
+## 🛡️ Threat Model (Quick View)
 
+| Primary Threats | Baseline Mitigations |
+| :--- | :--- |
+| **Forged Webhooks / Injection** | Authenticity checks, rate-limiting, and deduplication. |
+| **Slack Request Replay** | Signature verification + Timestamp tolerance (Anti-replay). |
+| **Prompt-Injection (LLM)** | Closed action catalog + **deny-by-default** mathematical policies. |
+| **Compromised Slack Session** | OTP step-up (TTL + limits) and **dual approval for PROD**. |
+| **Blast Radius Expansion** | Per-runbook least-privilege IAM roles; no long-lived keys. |
 
-## Threat model (quick view)
+> *Read the full security breakdown in `docs/threat-model.md`.*
 
-**Primary threats**
-- Forged webhooks / event injection
-- Slack request forgery + replay
-- Unauthorized approvals (compromised Slack session)
-- Over-privileged IAM roles / blast radius expansion
-- Prompt-injection via alert payloads (if LLM enabled)
+---
 
-**Baseline mitigations**
-- Verify webhook authenticity + rate-limit + dedupe
-- Verify Slack signatures + timestamp tolerance (anti-replay)
-- Closed action catalog + **deny-by-default** policies
-- OTP step-up (TTL + max attempts) and **dual approval for PROD**
-- Per-runbook least-privilege roles; no long-lived keys
-- Append-only audit trail (recommended)
+## 🏗️ Production Readiness
 
-Full notes: `docs/threat-model.md`
+### Redis Upgrade (Recommended)
+This repo seamlessly supports Redis-backed state for Distributed OTP issuance, Proposal correlation, and PROD dual-approval coordination.
 
+Set `REDIS_URL` in `.env` to enable. *(If unset, the app falls back to in-memory stores for local dev).*
 
-## Redis upgrade (recommended)
-
-This repo now supports Redis-backed state for:
-- OTP issuance/verification
-- Proposal correlation (Slack ↔ proposal)
-- PROD dual-approval coordination
-
-Set `REDIS_URL` to enable. If `REDIS_URL` is unset, the app falls back to in-memory stores (dev only).
-
-Quick start with Docker:
 ```bash
 cp .env.example .env
 # edit .env (set APP_SECRET, Slack secrets/tokens)
 docker compose up --build
 ```
 
+### Hardened `/execute` Endpoint (Idempotency + HMAC)
+The `/execute` endpoint is designed to be triggered by a **trusted runner** (e.g., n8n, Step Functions) and features bank-grade protections:
+- **HMAC request signing** (shared secret) to prevent tampering.
+- **Replay protection**: Timestamp tolerance + **nonce uniqueness**.
+- **Idempotency keys**: Prevents duplicate infrastructure mutations if the network drops and retries.
 
-## Hardened /execute (idempotency + replay protection + HMAC)
+<details>
+<summary><b>View Python Signature Example</b></summary>
 
-The `/execute` endpoint is designed for a **trusted runner** (e.g. n8n) and includes:
-- **HMAC request signing** (shared secret) to prevent tampering/forgery
-- **Replay protection**: timestamp tolerance + **nonce uniqueness**
-- **Idempotency keys**: prevents duplicate executions if n8n retries
-
-### Required headers (from n8n)
-- `X-CG-Timestamp`: unix epoch seconds (e.g. `1700000000`)
-- `X-CG-Nonce`: random unique string per request
-- `X-CG-Signature`: `v1=<hex>` where base is: `v1:{timestamp}:{nonce}:{raw_body}`
-- `Idempotency-Key`: unique key per execution (recommended)
-
-### Example signature (Python)
 ```python
 import time, secrets, hmac, hashlib, json
 
@@ -165,15 +152,14 @@ body = json.dumps({"proposal_id":"abc"}).encode()
 
 base = b"v1:" + ts.encode() + b":" + nonce.encode() + b":" + body
 sig = "v1=" + hmac.new(secret.encode(), base, hashlib.sha256).hexdigest()
-print(ts, nonce, sig)
+print(f"Timestamp: {ts} | Nonce: {nonce} | Sig: {sig}")
 ```
+</details>
 
-Configure in `.env`:
-- `N8N_SHARED_SECRET`
-- `REPLAY_TOLERANCE_SECONDS`
-- `IDEMPOTENCY_TTL_SECONDS`
+---
 
-
+## ⚠️ Disclaimer
+This project is an **Enterprise starter kit**. Do **not** deploy it to production accounts without proper IAM hardening, Vault/Secret Manager integration, and alignment with your internal change-management processes.
 
 ## 📜 License
 MIT — see [LICENSE](LICENSE).
@@ -188,8 +174,5 @@ MIT — see [LICENSE](LICENSE).
   </a>
   <a href="https://github.com/welldefreitas" target="_blank">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
-  </a>
-  <a href="https://instagram.com/welldefreitas" target="_blank">
-    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram">
   </a>
 </p>
