@@ -1,0 +1,20 @@
+{
+  "provider": "aws",
+  "account_id": "111111111111",
+  "env": "dev",
+  "event_id": "evt-123",
+  "resource": {
+    "type": "ec2_instance",
+    "id": "i-0abc123",
+    "region": "us-east-1",
+    "tags": {
+      "owner": "team-a"
+    }
+  },
+  "finding": {
+    "category": "finops",
+    "title": "EC2 left running out of hours",
+    "cost_per_day_usd": 50.0
+  },
+  "observed_at": "2026-02-26T08:00:00Z"
+}

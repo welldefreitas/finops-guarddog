@@ -1,0 +1,13 @@
+%% Cloud Guardrails Bot - Architecture (MVP)
+graph TD
+  A[Cloud Alerts<br/>(AWS/GCP)] -->|Webhook (signed)| B[Ingress (n8n or FastAPI)]
+  B --> C[Normalize + Enrich<br/>(tags/labels,cost,risk)]
+  C --> D[Policy Engine<br/>deny-by-default]
+  D -->|Proposal| E[Slack Card<br/>Approve/Deny/Snooze/Exception]
+  E -->|Approve| F[Slack Modal<br/>typed confirmation]
+  F -->|Step-up| G[OTP (DM)<br/>TTL + max attempts]
+  G --> H{Approval rules}
+  H -->|DEV/STAGE: 1| I[Execute Runbook<br/>(least-priv role)]
+  H -->|PROD: 2| I
+  I --> J[Audit Log + Metrics]
+  J --> E

@@ -1,0 +1,9 @@
+{
+  "action_id": "aws_release_unused_eip",
+  "risk_tier": "LOW",
+  "provider": "aws",
+  "required_permissions": [
+    "ec2:ReleaseAddress"
+  ],
+  "rollback_action": null
+}

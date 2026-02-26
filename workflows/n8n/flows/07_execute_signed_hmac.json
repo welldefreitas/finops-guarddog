@@ -1,0 +1,80 @@
+{
+  "name": "cloud-guardrails-execute-signed",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cloud-guardrails/execute",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "Webhook",
+      "name": "Webhook (Execute)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const crypto = require('crypto');\n\n// Inputs\nconst proposal_id = $json.proposal_id;\nconst secret = $env.N8N_SHARED_SECRET;\nif (!secret) throw new Error('N8N_SHARED_SECRET is not set');\n\nconst ts = Math.floor(Date.now()/1000).toString();\nconst nonce = crypto.randomBytes(12).toString('base64url');\nconst bodyObj = { proposal_id };\nconst body = JSON.stringify(bodyObj);\n\nconst base = `v1:${ts}:${nonce}:${body}`;\nconst digest = crypto.createHmac('sha256', secret).update(base).digest('hex');\nconst sig = `v1=${digest}`;\n\nreturn [{\n  json: {\n    body: bodyObj,\n    headers: {\n      'X-CG-Timestamp': ts,\n      'X-CG-Nonce': nonce,\n      'X-CG-Signature': sig,\n      'Idempotency-Key': `execute:${proposal_id}`\n    }\n  }\n}];"
+      },
+      "id": "Sign",
+      "name": "Sign (HMAC v1)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://fastapi:8000/execute",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "headerParametersJson": "={{JSON.stringify($json.headers)}}",
+        "bodyParametersJson": "={{JSON.stringify($json.body)}}"
+      },
+      "id": "HTTP",
+      "name": "FastAPI /execute (signed)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        760,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (Execute)": {
+      "main": [
+        [
+          {
+            "node": "Sign (HMAC v1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign (HMAC v1)": {
+      "main": [
+        [
+          {
+            "node": "FastAPI /execute (signed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "v1",
+  "id": "cloud-guardrails-execute-signed"
+}

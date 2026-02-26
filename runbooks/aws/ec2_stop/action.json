@@ -1,0 +1,9 @@
+{
+  "action_id": "aws_ec2_stop_dev_out_of_hours",
+  "risk_tier": "LOW",
+  "provider": "aws",
+  "required_permissions": [
+    "ec2:StopInstances"
+  ],
+  "rollback_action": "start_instance"
+}

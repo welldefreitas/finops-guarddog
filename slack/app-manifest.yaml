@@ -1,0 +1,28 @@
+display_information:
+  name: Cloud Guardrails Bot
+  description: Policy-driven FinOps & Security remediation approvals.
+  background_color: "#202124"
+
+features:
+  bot_user:
+    display_name: Cloud Guardrails
+    always_online: false
+
+oauth_config:
+  scopes:
+    bot:
+      - chat:write
+      - commands
+      - im:write
+      - users:read
+      - channels:read
+
+settings:
+  interactivity:
+    is_enabled: true
+    request_url: https://YOUR_DOMAIN/slack/actions
+  event_subscriptions:
+    bot_events:
+      - app_mention
+  org_deploy_enabled: false
+  socket_mode_enabled: false

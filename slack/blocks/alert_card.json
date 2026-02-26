@@ -1,0 +1,80 @@
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "Cloud Guardrails Alert"
+      }
+    },
+    {
+      "type": "section",
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Action:*\naws_ec2_stop_dev_out_of_hours"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Resource:*\ni-0abc123"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Env:*\ndev"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Impact:*\n$50/day"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "I detected an out-of-hours instance running. Approve remediation?"
+      }
+    },
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Approve"
+          },
+          "style": "primary",
+          "value": "PROPOSAL_ID",
+          "action_id": "approve_proposal"
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Deny"
+          },
+          "style": "danger",
+          "value": "PROPOSAL_ID",
+          "action_id": "deny_proposal"
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Snooze"
+          },
+          "value": "snooze"
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Create Exception"
+          },
+          "value": "exception"
+        }
+      ]
+    }
+  ]
+}

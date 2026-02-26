@@ -1,0 +1,13 @@
+name: Bug report
+description: Report a problem
+title: "[bug] "
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+  - type: textarea
+    attributes:
+      label: Expected behavior

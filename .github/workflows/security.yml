@@ -1,0 +1,51 @@
+name: security
+
+on:
+  push:
+    branches: ["master", "main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  bandit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install
+        run: |
+          python -m pip install -U pip
+          pip install -e ".[dev]"
+      - name: Bandit (exclude tests)
+        run: |
+          bandit -r src -q -x src/guardrails/tests
+
+  pip-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install deps
+        run: |
+          python -m pip install -U pip
+          pip install -e ".[dev]"
+          pip install pip-audit
+      - name: pip-audit (report)
+        run: |
+          mkdir -p reports
+          pip-audit -f json -o reports/pip-audit.json
+      - name: Upload pip-audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip-audit-report
+          path: reports/pip-audit.json
+          if-no-files-found: ignore

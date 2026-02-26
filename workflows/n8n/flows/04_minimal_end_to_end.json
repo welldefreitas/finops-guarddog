@@ -1,0 +1,162 @@
+{
+  "name": "cloud-guardrails-minimal-e2e",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cloud-guardrails/alert",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "Webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://fastapi:8000/webhook/alert",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={{JSON.stringify($json)}}"
+      },
+      "id": "FastAPI",
+      "name": "FastAPI /webhook/alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "slack_text",
+              "value": "={{$json.summary}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "Set",
+      "name": "Set Slack Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "={{$env.SLACK_CHANNEL_ID}}",
+        "text": "={{$json.slack_text}}",
+        "otherOptions": {
+          "blocksUi": {
+            "blocksValues": [
+              {
+                "blockUi": {
+                  "type": "section",
+                  "text": {
+                    "text": "={{'*Proposal:* ' + $json.proposal_id + '\\n*Action:* ' + $json.decision.action_id + '\\n*Resource:* ' + $json.alert.resource.id + '\\n*Env:* ' + $json.alert.env}}",
+                    "type": "mrkdwn"
+                  }
+                }
+              },
+              {
+                "blockUi": {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Approve"
+                      },
+                      "style": "primary",
+                      "action_id": "approve_proposal",
+                      "value": "={{$json.proposal_id}}"
+                    },
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Deny"
+                      },
+                      "style": "danger",
+                      "action_id": "deny_proposal",
+                      "value": "={{$json.proposal_id}}"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "id": "Slack",
+      "name": "Slack Post Message",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [
+        980,
+        300
+      ],
+      "credentials": {
+        "slackApi": {
+          "id": "={{$env.N8N_SLACK_CREDENTIAL_ID}}",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "FastAPI /webhook/alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FastAPI /webhook/alert": {
+      "main": [
+        [
+          {
+            "node": "Set Slack Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Slack Text": {
+      "main": [
+        [
+          {
+            "node": "Slack Post Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "v1",
+  "id": "cloud-guardrails-minimal-e2e"
+}

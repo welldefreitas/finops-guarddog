@@ -1,0 +1,85 @@
+{
+  "type": "modal",
+  "callback_id": "guardrails_approve_modal",
+  "title": {
+    "type": "plain_text",
+    "text": "Approve Remediation"
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Approve"
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel"
+  },
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Step-up approval*\nType the confirmation and provide OTP if required."
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "typed_confirmation",
+      "label": {
+        "type": "plain_text",
+        "text": "Type confirmation"
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "value",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "APPLY <ACTION_ID> <RESOURCE_ID>"
+        }
+      }
+    },
+    {
+      "type": "input",
+      "optional": true,
+      "block_id": "otp_code",
+      "label": {
+        "type": "plain_text",
+        "text": "OTP (if required)"
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "value",
+        "placeholder": {
+          "type": "plain_text",
+          "text": "e.g., ALPACA-17"
+        }
+      }
+    },
+    {
+      "type": "input",
+      "optional": true,
+      "block_id": "justification",
+      "label": {
+        "type": "plain_text",
+        "text": "Justification"
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "value",
+        "multiline": true
+      }
+    },
+    {
+      "type": "input",
+      "optional": true,
+      "block_id": "ticket",
+      "label": {
+        "type": "plain_text",
+        "text": "Ticket / Change ID (required for PROD)"
+      },
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "value"
+      }
+    }
+  ]
+}
