@@ -1,13 +1,13 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/welldefreitas/cloud-guardrails-bot/main/docs/guarddog.jpg" alt="Cloud GuardDog" width="150" onerror="this.style.display='none'"/>
+<img src="docs/guarddog.jpg" alt="Cloud GuardDog" width="150"/>
 
 # 🛡️ Cloud GuardDog (FinOps & SecOps)
 
 **Policy-driven auto-remediation via Slack approvals — with OTP step-up & dual approval for PROD.**
 
-[![ci](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/ci.yml)
-[![security](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/security.yml/badge.svg)](https://github.com/welldefreitas/cloud-guardrails-bot/actions/workflows/security.yml)
+[![ci](https://github.com/welldefreitas/finops-guarddog/actions/workflows/ci.yml/badge.svg)](https://github.com/welldefreitas/finops-guarddog/actions/workflows/ci.yml)
+[![security](https://github.com/welldefreitas/finops-guarddog/actions/workflows/security.yml/badge.svg)](https://github.com/welldefreitas/finops-guarddog/actions/workflows/security.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=flat&logo=redis&logoColor=white)](https://redis.io/)
