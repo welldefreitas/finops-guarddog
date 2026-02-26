@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/welldefreitas/cloud-guardrails-bot/main/guarddog.jpg" alt="Cloud GuardDog" width="150" onerror="this.style.display='none'"/>
+<img src="https://raw.githubusercontent.com/welldefreitas/cloud-guardrails-bot/main/docs/guarddog.jpg" alt="Cloud GuardDog" width="150" onerror="this.style.display='none'"/>
 
 # 🛡️ Cloud GuardDog (FinOps & SecOps)
 
@@ -161,6 +161,7 @@ print(f"Timestamp: {ts} | Nonce: {nonce} | Sig: {sig}")
 ## ⚠️ Disclaimer
 This project is an **Enterprise starter kit**. Do **not** deploy it to production accounts without proper IAM hardening, Vault/Secret Manager integration, and alignment with your internal change-management processes.
 
+
 ## 📜 License
 MIT — see [LICENSE](LICENSE).
 
@@ -174,5 +175,8 @@ MIT — see [LICENSE](LICENSE).
   </a>
   <a href="https://github.com/welldefreitas" target="_blank">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+  </a>
+  <a href="https://instagram.com/welldefreitas" target="_blank">
+    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram">
   </a>
 </p>
